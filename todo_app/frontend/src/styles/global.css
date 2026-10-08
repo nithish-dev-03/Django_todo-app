@@ -1,0 +1,481 @@
+:root {
+  --app-bg: #0d1117;
+  --app-panel: #151b23;
+  --app-border: #232b36;
+  --app-text: #e6edf3;
+  --app-muted: #8b949e;
+  --app-glow: rgba(79, 140, 255, 0.35);
+  /* Must match Layout.headerHeight in theme.ts. */
+  --app-header-h: 60px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+/* The app owns its own scrolling, so the document itself never scrolls. */
+body {
+  overflow: hidden;
+}
+
+body {
+  background: var(--app-bg);
+  color: var(--app-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ambient grid + glow backdrop behind the whole app. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+}
+
+body[data-theme='light'] {
+  --app-bg: #f4f6fa;
+  --app-panel: #ffffff;
+  --app-border: #e6eaf0;
+  --app-text: #1f2933;
+  --app-muted: #667085;
+}
+
+body[data-theme='light']::before {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+}
+
+/* ---------- App shell ---------- */
+
+.app-sider {
+  border-right: 1px solid var(--app-border);
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 60px;
+  padding: 0 18px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border-bottom: 1px solid var(--app-border);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.app-logo__mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 8px;
+  color: #fff;
+  background: linear-gradient(135deg, #4f8cff, #7b5cff);
+  box-shadow: 0 0 18px var(--app-glow);
+}
+
+.app-logo__text {
+  font-size: 16px;
+}
+
+.app-logo__text small {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--app-muted);
+}
+
+.app-header {
+  z-index: 20;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--app-border);
+}
+
+.app-content {
+  position: relative;
+  z-index: 1;
+  padding: 24px;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+/* ---------- Stat cards ---------- */
+
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(79, 140, 255, 0.55);
+}
+
+.stat-card__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  font-size: 19px;
+}
+
+.stat-card__hint {
+  margin-top: 6px;
+  font-size: 12px;
+  /* Explicit colour so the hint stays readable on both themes. */
+  color: var(--app-muted);
+}
+
+.stat-card__spark {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 90px;
+  height: 56px;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: 0.2px;
+}
+
+.section-title__hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--app-muted);
+}
+
+/* ---------- Filters ---------- */
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-panel);
+}
+
+.filter-bar__search {
+  flex: 1 1 240px;
+  min-width: 200px;
+  max-width: 360px;
+}
+
+.filter-bar__spacer {
+  flex: 1 1 auto;
+}
+
+.tag-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.tag-chip {
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.tag-chip:hover {
+  transform: translateY(-1px);
+}
+
+.tag-chip--active {
+  box-shadow: 0 0 0 2px rgba(79, 140, 255, 0.5);
+}
+
+/* ---------- Table ---------- */
+
+/* The board fills the viewport: the page never scrolls, the tbody does. */
+.app-content {
+  height: calc(100vh - var(--app-header-h, 60px));
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Overview / Labels keep the document scroll, since their content is short
+   and stacked. Only the board opts into a locked viewport. */
+.page--scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Only the tasks board should stretch and scroll. */
+.page--fill {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.page--fill > .page-head,
+.page--fill > .filter-bar,
+.page--fill > .tag-chip-row,
+.page--fill > .ant-alert,
+.page--fill > .table-footer {
+  flex: 0 0 auto;
+}
+
+/* The Alert renders as a fragment sibling, so give it a fixed flex slot. */
+.page--fill > .ant-alert {
+  margin-bottom: 16px;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16;
+  flex-wrap: wrap;
+}
+
+.table-viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-panel);
+}
+
+.table-viewport .ant-table-wrapper,
+.table-viewport .ant-spin-nested-loading,
+.table-viewport .ant-spin-container {
+  height: 100%;
+}
+
+.table-footer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.todo-table .ant-table-thead > tr > th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.drag-handle {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--app-muted);
+  cursor: grab;
+  touch-action: none;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.drag-handle:hover {
+  color: var(--app-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.todo-row {
+  transition: background 0.15s ease;
+}
+
+.todo-row--done .todo-title {
+  color: var(--app-muted);
+  text-decoration: line-through;
+  text-decoration-color: rgba(139, 148, 158, 0.7);
+}
+
+.todo-row--overdue .todo-due {
+  color: #ff4d4f;
+  font-weight: 600;
+}
+
+.todo-due {
+  white-space: nowrap;
+}
+
+.todo-row--dragging {
+  opacity: 0.85;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.todo-row--dragging td {
+  background: var(--app-panel);
+}
+
+.todo-title {
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.todo-title:hover {
+  color: #4f8cff;
+}
+
+.todo-desc {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--app-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cell-actions {
+  display: flex;
+  gap: 2px;
+  justify-content: flex-end;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.todo-row:hover .cell-actions,
+.todo-row:focus-within .cell-actions {
+  opacity: 1;
+}
+
+.inline-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.inline-editor__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ---------- Recent list (overview) ---------- */
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-list__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.recent-list__row:last-child {
+  border-bottom: none;
+}
+
+.recent-list__dot {
+  width: 8px;
+  height: 8px;
+  margin-top: 7px;
+  flex: 0 0 8px;
+  border-radius: 4px;
+}
+
+.recent-list__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  font-weight: 550;
+}
+
+/* ---------- Misc ---------- */
+
+.empty-state {
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.toolbar-note {
+  font-size: 12px;
+  color: var(--app-muted);
+}
+
+.priority-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.priority-bar__seg {
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    padding: 16px;
+  }
+}
+
+/* Without a fixed viewport height there is nothing to scroll inside, so let
+   the page scroll normally. On narrow screens the stacked filters leave too
+   little room for an inner scroll area, which would clip rows entirely. */
+@media (max-width: 900px), (max-height: 620px) {
+  body {
+    overflow: auto;
+  }
+
+  .app-content {
+    height: auto;
+    min-height: calc(100vh - var(--app-header-h));
+  }
+
+  .page--scroll,
+  .page--fill {
+    overflow: visible;
+  }
+
+  .table-viewport {
+    overflow: visible;
+    height: auto;
+  }
+}

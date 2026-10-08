@@ -1,0 +1,191 @@
+{% load static %}<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{{ error_title|default:"Something broke" }} · Taskflow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="{% static 'fallback/fallback.css' %}" />
+  </head>
+
+  <body
+    data-theme="dark"
+    data-severity="{{ severity|default:'error' }}"
+    data-retry-url="{{ retry_url|default:'/' }}"
+    data-retry-after="{{ retry_after|default:'8' }}"
+  >
+    <div class="fx-backdrop" aria-hidden="true">
+      <span class="fx-backdrop__beam"></span>
+      <span class="fx-backdrop__halo"></span>
+    </div>
+
+    <header class="fx-topbar">
+      <div class="fx-brand">
+        <span class="fx-brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m8 6-6 6 6 6" />
+            <path d="m16 6 6 6-6 6" />
+          </svg>
+        </span>
+        <span class="fx-brand__text">
+          Taskflow
+          <small>fallback shell</small>
+        </span>
+      </div>
+
+      <div class="fx-topbar__right">
+        <span class="fx-chip fx-chip--muted mono">{{ stage|default:"edge / django" }}</span>
+        <span class="fx-chip mono" data-severity-chip>
+          <span class="fx-dot" aria-hidden="true"></span>
+          {{ severity|default:"error" }}
+        </span>
+        <button class="fx-iconbtn" type="button" data-theme-toggle aria-label="Toggle colour theme">
+          <svg class="fx-icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+          </svg>
+          <svg class="fx-icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="fx-main">
+      <section class="fx-hero">
+        <div class="fx-hero__badge">
+          <span class="fx-radar" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="mono">{{ code|default:"ERR_FALLBACK" }}</span>
+        </div>
+
+        <h1 class="fx-hero__title">
+          {{ error_title|default:"The interface hit a wall it couldn't render past." }}
+        </h1>
+
+        <p class="fx-hero__lead">
+          {{ error_message|default:"Your data is safe. This screen is the safety net the app fell back to, so the rest of the console is out of reach until the render is retried." }}
+        </p>
+
+        <div class="fx-actions">
+          <button class="fx-btn fx-btn--primary" type="button" data-retry>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12a9 9 0 1 1-2.6-6.4" />
+              <path d="M21 3v6h-6" />
+            </svg>
+            <span>Retry render</span>
+            <em class="fx-btn__count mono" data-retry-count hidden>8s</em>
+          </button>
+
+          <a class="fx-btn fx-btn--ghost" href="{{ home_url|default:'/' }}" data-home>Back to console</a>
+
+          <button class="fx-btn fx-btn--ghost" type="button" data-copy-report>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="12" height="12" rx="2.5" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+            Copy report
+          </button>
+
+          <button class="fx-btn fx-btn--quiet" type="button" data-theme-toggle-2>Light theme</button>
+        </div>
+
+        <div class="fx-progress" data-progress-wrap hidden>
+          <span class="fx-progress__label mono">auto-retry armed</span>
+          <span class="fx-progress__track"><span class="fx-progress__fill" data-progress-fill></span></span>
+          <button class="fx-progress__cancel" type="button" data-retry-cancel>cancel</button>
+        </div>
+
+        <ul class="fx-hints">
+          <li>
+            <span class="fx-hints__key">R</span>
+            retry the render now
+          </li>
+          <li>
+            <span class="fx-hints__key">T</span>
+            flip the theme
+          </li>
+          <li>
+            <span class="fx-hints__key">C</span>
+            copy a full diagnostic
+          </li>
+          <li>
+            <span class="fx-hints__key">Esc</span>
+            clear auto-retry
+          </li>
+        </ul>
+      </section>
+
+      <section class="fx-panel" aria-label="Diagnostics">
+        <div class="fx-panel__head">
+          <div class="fx-tabs" role="tablist" aria-label="Diagnostic views">
+            <button class="fx-tab is-active" type="button" role="tab" aria-selected="true" data-tab="trace">Traceback</button>
+            <button class="fx-tab" type="button" role="tab" aria-selected="false" data-tab="request">Request</button>
+            <button class="fx-tab" type="button" role="tab" aria-selected="false" data-tab="env">Environment</button>
+          </div>
+          <span class="fx-panel__meta mono" data-clock>--:--:--</span>
+        </div>
+
+        <div class="fx-panel__body">
+          <div class="fx-view is-active" data-view="trace" role="tabpanel">
+            <div class="fx-view__bar">
+              <span class="mono fx-view__path">{{ exception|default:"BoundaryError: unhandled render failure" }}</span>
+              <button class="fx-mini" type="button" data-copy-trace>copy</button>
+            </div>
+            <pre class="fx-trace mono" data-trace>{{ traceback|default:"Traceback (most recent call last):\n  File \"events/views.py\", line 6, in todoForm\n    return render(request, 'events/index.html')\nBoundaryError: unhandled render failure — the SPA shell could not be hydrated." }}</pre>
+            <button class="fx-more" type="button" data-more hidden>
+              show full trace
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="fx-view" data-view="request" role="tabpanel" hidden>
+            <dl class="fx-kv">
+              <div><dt>method</dt><dd class="mono">{{ request.method|default:"GET" }}</dd></div>
+              <div><dt>path</dt><dd class="mono">{{ request.path|default:"/" }}</dd></div>
+              <div><dt>query</dt><dd class="mono">{{ request.GET.urlencode|default:"—" }}</dd></div>
+              <div><dt>referer</dt><dd class="mono">{{ request.META.HTTP_REFERER|default:"—" }}</dd></div>
+              <div><dt>agent</dt><dd class="mono">{{ request.META.HTTP_USER_AGENT|default:"—" }}</dd></div>
+              <div><dt>client</dt><dd class="mono">{{ client_ip|default:"127.0.0.1" }}</dd></div>
+            </dl>
+          </div>
+
+          <div class="fx-view" data-view="env" role="tabpanel" hidden>
+            <dl class="fx-kv">
+              <div><dt>django</dt><dd class="mono">{{ django_version|default:"6.1" }}</dd></div>
+              <div><dt>python</dt><dd class="mono">{{ python_version|default:"3.13" }}</dd></div>
+              <div><dt>platform</dt><dd class="mono">{{ platform|default:"linux" }}</dd></div>
+              <div><dt>debug</dt><dd class="mono">{{ debug|default:"True" }}</dd></div>
+              <div><dt>build</dt><dd class="mono">{{ build_id|default:"dev" }}</dd></div>
+              <div><dt>hostname</dt><dd class="mono">{{ hostname|default:"localhost" }}</dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="fx-panel__foot">
+          <span class="fx-foot-note">Nothing here left your machine — the report is plain text you paste anywhere.</span>
+          <a class="fx-foot-link" href="mailto:support@example.com">contact support</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="fx-statusbar">
+      <span class="fx-status__item">
+        <span class="fx-dot fx-dot--live" aria-hidden="true"></span>
+        <span class="mono">boundary engaged</span>
+      </span>
+      <span class="fx-status__item mono">{{ hostname|default:"localhost" }} · {{ request.path|default:"/" }}</span>
+      <span class="fx-status__spacer"></span>
+      <span class="fx-status__item mono" data-uptime>session 00:00:00</span>
+      <span class="fx-status__item mono">{{ server_time|default:"--:--:-- UTC" }}</span>
+    </footer>
+
+    <div class="fx-toast" role="status" aria-live="polite" data-toast></div>
+
+    <script src="{% static 'fallback/fallback.js' %}" defer></script>
+  </body>
+</html>
